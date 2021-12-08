@@ -7,6 +7,25 @@
   pointer-events: none;
 }
 
+.card {
+  width: 100px;
+  height: 100px;
+}
+
+.card-front {
+  width: 100px;
+  height: 100px;
+}
+
+.card-back {
+  width: 100px;
+  height: 100px;
+}
+
+.red-back {
+  background-color: red;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
