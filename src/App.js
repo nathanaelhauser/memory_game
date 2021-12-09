@@ -13,79 +13,93 @@ const shuffleArray = array => {
 };
 
 let initialCardData = shuffleArray([
-  { imageId: 0, isFlipped: true },
-  { imageId: 1, isFlipped: true },
-  { imageId: 2, isFlipped: true },
-  { imageId: 3, isFlipped: true },
-  { imageId: 0, isFlipped: true },
-  { imageId: 1, isFlipped: true },
-  { imageId: 2, isFlipped: true },
-  { imageId: 3, isFlipped: true },
+  { imageId: 0, isFlipped: false },
+  { imageId: 1, isFlipped: false },
+  { imageId: 2, isFlipped: false },
+  { imageId: 3, isFlipped: false },
+  { imageId: 0, isFlipped: false },
+  { imageId: 1, isFlipped: false },
+  { imageId: 2, isFlipped: false },
+  { imageId: 3, isFlipped: false },
 ]);
 
 const App = () => {
   const [state, setState] = useState({
     score: 0,
     cardData: initialCardData,
-    chosenCardIndices: [],
-    handleCardClick: cardId => event => {
-      // if first card is clicked, set chosenCardIndices to [cardId]
-      if (state.chosenCardIndices.length === 0) {
-        console.log('first card clicked', cardId);
-        setState({
-          ...state,
-          chosenCardIndices: [cardId]
-        });
-      } else if (state.chosenCardIndices.length === 1) {
-        console.log('second card clicked', cardId);
-        // if second card is clicked, add cardId to chosenCardIndices
-        setState({
-          ...state,
-          chosenCardIndices: [...state.chosenCardIndices, cardId]
-        });
+    chosenCardIndices: []
+  });
 
-        const firstCardImage = state.cardData[state.chosenCardIndices[0]].imageId;
-        const secondCardImage = state.cardData[cardId].imageId;
+  const handleCardClick = cardId => event => {
+    console.log(`card clicked: ${cardId}`);
+    // if the card is already flipped, do nothing
+    if (state.cardData[cardId].isFlipped) {
+      console.log("Card already flipped");
+      return;
+    }
 
-        // if the two cards match, set ChosenCardIndices to [] and leave the cards flipped
-        if (firstCardImage === secondCardImage) {
-          setState({
-            ...state,
-            chosenCardIndices: [],
-            score: state.score + 1
-          });
-        } else {
-          // if the two cards don't match, set ChosenCardIndices to [] and flip the cards back over
-          setTimeout(() => {
-            setState({
-              ...state,
+    setState(prevState => {
+      console.log("Flipping card");
+      switch (prevState.chosenCardIndices.length) {
+        case 0:
+          // if the first card is clicked, flip it
+          return {
+            ...prevState,
+            chosenCardIndices: [cardId],
+            cardData: prevState.cardData.map((card, index) => {
+              if (index === cardId) {
+                return { ...card, isFlipped: true };
+              }
+              return card;
+            })
+          };
+        case 1:
+          // if the second card is clicked, flip it and check if they match
+          const firstCardImage = prevState.cardData[prevState.chosenCardIndices[0]].imageId;
+          const secondCardImage = prevState.cardData[cardId].imageId;
+          if (firstCardImage === secondCardImage) {
+            // if they match, increment the score and reset the chosen cards
+            console.log("Matched");
+            return {
+              ...prevState,
+              score: prevState.score + 1,
               chosenCardIndices: [],
-              cardData: state.cardData.map(card => {
-                if (card.imageId === firstCardImage || card.imageId === secondCardImage) {
+              cardData: prevState.cardData.map((card, index) => {
+                if (index === cardId) {
                   return { ...card, isFlipped: true };
                 }
                 return card;
               })
-            });
-          }, 1000);
-        }
-      } else {
-        // ignore clicks if two cards are already chosen
-        return;
-      }
-      // flip the card
-      setState({
-        ...state,
-        cardData: state.cardData.map((card, index) => {
-          if (index === cardId) {
-            return { ...card, isFlipped: false };
+            };
+          } else {
+            // if they don't match, wait 3 seconds and flip them back
+            console.log("Not matched");
+            setTimeout(() => {
+              const cardData = prevState.cardData.map(card => {
+                if (card.imageId === firstCardImage || card.imageId === secondCardImage) {
+                  return { ...card, isFlipped: false };
+                }
+                return card;
+              });
+              setState({ ...prevState, cardData, chosenCardIndices: [] });
+            }, 3000);
+            return {
+              ...prevState,
+              chosenCardIndices: [...prevState.chosenCardIndices, cardId],
+              cardData: prevState.cardData.map((card, index) => {
+                if (index === cardId) {
+                  return { ...card, isFlipped: true };
+                }
+                return card;
+              })
+            };
           }
-          return card;
-        })
-      });
-    },
-    resetGame: () => { }
-  });
+        case 2:
+        default:
+          return prevState;
+      }
+    });
+  };
 
   return (
     <div className="App">
@@ -97,11 +111,12 @@ const App = () => {
               cardId={index}
               imageId={cardData.imageId}
               isFlipped={cardData.isFlipped}
-              onClick={state.handleCardClick}
-              cardBack={cardBackground}
+              onClick={handleCardClick}
+              cardFront={cardBackground}
             />
           )}
         </div>
+        <button onClick={() => console.log(state)}>Show state</button>
       </GameContext.Provider>
     </div>
   );

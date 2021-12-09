@@ -4,9 +4,7 @@ const GameContext = createContext({
   score: 0,
   cardData: [],
   chosenCardIndices: [],
-  handleFlipCard: () => {},
-  resetGame: () => {},
-  startGame: () => {}
+  resetGame: () => { },
 });
 
 export default GameContext;

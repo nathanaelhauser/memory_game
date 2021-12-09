@@ -5,7 +5,7 @@ import BellSVG from '../assets/svgs/bell-1619890.svg';
 import CalenderSVG from '../assets/svgs/calender-1619939.svg';
 import CandlesSVG from '../assets/svgs/candles-1619938.svg';
 
-const cardFront = (imageId) => {
+const cardBack = (imageId) => {
   switch (imageId) {
     case 0:
       return BeanieSVG;
@@ -25,10 +25,10 @@ const MemoryCard = (props) => {
     <div className="card-front" onClick={props.onClick(props.cardId)}>
       <ReactCardFlip isFlipped={props.isFlipped} flipDirection="horizontal" className="card">
         <div className="card-front">
-          <img src={cardFront(props.imageId)} alt="Card Front" className="card-front" />
+          <img src={props.cardFront} alt="Card Front" className="card-front" />
         </div>
-        <div className="card-back red-back">
-          <img src={props.cardBack} alt="Card Background" className="card-back" />
+        <div className="card-back">
+          <img src={cardBack(props.imageId)} alt="Card Back" className="card-back" />
         </div>
       </ReactCardFlip>
     </div>
