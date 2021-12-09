@@ -116,7 +116,7 @@ const App = () => {
             />
           )}
         </div>
-        <button onClick={() => console.log(state)}>Show state</button>
+        <h1>{state.score}</h1>
       </GameContext.Provider>
     </div>
   );
