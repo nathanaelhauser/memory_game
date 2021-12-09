@@ -22,7 +22,7 @@ const cardFront = (imageId) => {
 
 const MemoryCard = (props) => {
   return (
-    <div className="card-front" onClick={props.onHandleClick(props.cardId)}>
+    <div className="card-front" onClick={props.onClick(props.cardId)}>
       <ReactCardFlip isFlipped={props.isFlipped} flipDirection="horizontal" className="card">
         <div className="card-front">
           <img src={cardFront(props.imageId)} alt="Card Front" className="card-front" />

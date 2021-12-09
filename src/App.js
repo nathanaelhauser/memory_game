@@ -1,10 +1,18 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import GameContext from './utils/GameContext';
-import MemoryCard from './components/MemoryCard.js';
+import MemoryCard from './components/MemoryCard';
 import cardBackground from './assets/images/card_background.png';
 import "./App.css";
 
-const initialCardData = [
+const shuffleArray = array => {
+  for (let i = 0; i < array.length; i++) {
+    const j = Math.floor(Math.random() * i);
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
+let initialCardData = shuffleArray([
   { imageId: 0, isFlipped: true },
   { imageId: 1, isFlipped: true },
   { imageId: 2, isFlipped: true },
@@ -13,7 +21,7 @@ const initialCardData = [
   { imageId: 1, isFlipped: true },
   { imageId: 2, isFlipped: true },
   { imageId: 3, isFlipped: true },
-];
+]);
 
 const App = () => {
   const [state, setState] = useState({
@@ -24,12 +32,13 @@ const App = () => {
     resetGame: () => { }
   });
 
-  const handleClick = (cardId) => (event) =>
+  const handleClick = cardId => event => {
     setState(prevState => {
-      let tempState = { ...prevState };
-      tempState.cardData[cardId].isFlipped = !prevState.cardData[cardId].isFlipped;
-      return tempState;
+      let newState = { ...prevState };
+      newState.cardData[cardId].isFlipped = !prevState.cardData[cardId].isFlipped;
+      return newState;
     });
+  };
 
   return (
     <div className="App">
@@ -41,7 +50,7 @@ const App = () => {
               cardId={index}
               imageId={cardData.imageId}
               isFlipped={cardData.isFlipped}
-              onHandleClick={handleClick}
+              onClick={handleClick}
               cardBack={cardBackground}
             />
           )}
