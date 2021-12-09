@@ -28,17 +28,64 @@ const App = () => {
     score: 0,
     cardData: initialCardData,
     chosenCardIndices: [],
-    handleFlipCard: () => { },
+    handleCardClick: cardId => event => {
+      // if first card is clicked, set chosenCardIndices to [cardId]
+      if (state.chosenCardIndices.length === 0) {
+        console.log('first card clicked', cardId);
+        setState({
+          ...state,
+          chosenCardIndices: [cardId]
+        });
+      } else if (state.chosenCardIndices.length === 1) {
+        console.log('second card clicked', cardId);
+        // if second card is clicked, add cardId to chosenCardIndices
+        setState({
+          ...state,
+          chosenCardIndices: [...state.chosenCardIndices, cardId]
+        });
+
+        const firstCardImage = state.cardData[state.chosenCardIndices[0]].imageId;
+        const secondCardImage = state.cardData[cardId].imageId;
+
+        // if the two cards match, set ChosenCardIndices to [] and leave the cards flipped
+        if (firstCardImage === secondCardImage) {
+          setState({
+            ...state,
+            chosenCardIndices: [],
+            score: state.score + 1
+          });
+        } else {
+          // if the two cards don't match, set ChosenCardIndices to [] and flip the cards back over
+          setTimeout(() => {
+            setState({
+              ...state,
+              chosenCardIndices: [],
+              cardData: state.cardData.map(card => {
+                if (card.imageId === firstCardImage || card.imageId === secondCardImage) {
+                  return { ...card, isFlipped: true };
+                }
+                return card;
+              })
+            });
+          }, 1000);
+        }
+      } else {
+        // ignore clicks if two cards are already chosen
+        return;
+      }
+      // flip the card
+      setState({
+        ...state,
+        cardData: state.cardData.map((card, index) => {
+          if (index === cardId) {
+            return { ...card, isFlipped: false };
+          }
+          return card;
+        })
+      });
+    },
     resetGame: () => { }
   });
-
-  const handleClick = cardId => event => {
-    setState(prevState => {
-      let newState = { ...prevState };
-      newState.cardData[cardId].isFlipped = !prevState.cardData[cardId].isFlipped;
-      return newState;
-    });
-  };
 
   return (
     <div className="App">
@@ -50,7 +97,7 @@ const App = () => {
               cardId={index}
               imageId={cardData.imageId}
               isFlipped={cardData.isFlipped}
-              onClick={handleClick}
+              onClick={state.handleCardClick}
               cardBack={cardBackground}
             />
           )}
