@@ -1,24 +1,52 @@
-import React, { useState } from 'react';
-import ReactCardFlip from 'react-card-flip';
-import { ReactComponent as BeanieSVG } from './assets/svgs/beanie-1619898.svg';
+import React, { useState, useContext } from 'react';
+import GameContext from './utils/GameContext';
+import MemoryCard from './components/MemoryCard.js';
 import cardBackground from './assets/images/card_background.png';
 import "./App.css";
 
-function App() {
-  let [isFlipped, setIsFlipped] = useState(true);
+const initialCardData = [
+  { imageId: 0, isFlipped: true },
+  { imageId: 1, isFlipped: true },
+  { imageId: 2, isFlipped: true },
+  { imageId: 3, isFlipped: true },
+  { imageId: 0, isFlipped: true },
+  { imageId: 1, isFlipped: true },
+  { imageId: 2, isFlipped: true },
+  { imageId: 3, isFlipped: true },
+];
+
+const App = () => {
+  const [state, setState] = useState({
+    score: 0,
+    cardData: initialCardData,
+    chosenCardIndices: [],
+    handleFlipCard: () => { },
+    resetGame: () => { }
+  });
+
+  const handleClick = (cardId) => (event) =>
+    setState(prevState => {
+      let tempState = { ...prevState };
+      tempState.cardData[cardId].isFlipped = !prevState.cardData[cardId].isFlipped;
+      return tempState;
+    });
 
   return (
     <div className="App">
-      <div className="card-front" onClick={() => setIsFlipped(prevState => !prevState)}>
-        <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" className="card">
-          <div className="card-front">
-            <BeanieSVG />
-          </div>
-          <div className="card-back red-back">
-            <img src={cardBackground} alt="Card Background" className="card-back" />
-          </div>
-        </ReactCardFlip>
-      </div>
+      <GameContext.Provider value={state}>
+        <div className='container'>
+          {state.cardData.map((cardData, index) =>
+            <MemoryCard
+              key={index}
+              cardId={index}
+              imageId={cardData.imageId}
+              isFlipped={cardData.isFlipped}
+              onHandleClick={handleClick}
+              cardBack={cardBackground}
+            />
+          )}
+        </div>
+      </GameContext.Provider>
     </div>
   );
 }
